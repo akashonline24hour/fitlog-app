@@ -30,14 +30,14 @@ export default function HeroBanner() {
             </div>
           </div>
 
-          {/* Right Banner Image */}
+          {/* Right Banner Image (No background, full image visible) */}
           <div className="w-full md:w-80 flex justify-center">
-            <div className="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-slate-800">
+            <div className="relative w-full h-64 sm:h-72">
               <Image
                 src="/images/banner.png"
                 alt="FitLog Hero Banner"
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             </div>
