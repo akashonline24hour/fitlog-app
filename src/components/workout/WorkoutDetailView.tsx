@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { Plus, Bookmark } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Plus, Bookmark, ArrowLeft } from "lucide-react";
 import { usePlan } from "@/context/PlanContext";
 import { Workout } from "@/types/workout";
 
@@ -13,18 +15,32 @@ export default function WorkoutDetailView({ workout }: WorkoutDetailViewProps) {
   const { addToTodayPlan, addToSaved } = usePlan();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+      {/* Back Button */}
+      <div>
+        <Link
+          href="/"
+          className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-white transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Library</span>
+        </Link>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Left Column — Exercise Artwork */}
-        <div className="lg:col-span-5 rounded-2xl overflow-hidden bg-slate-900 border border-slate-800">
-          <img
-            src={workout.image || "/fallback.jpg"}
+        <div className="lg:col-span-5 relative h-[380px] sm:h-[420px] rounded-2xl overflow-hidden bg-[#121620] border border-slate-800">
+          <Image
+            src={workout.image || "/images/banner.png"}
             alt={workout.name}
-            className="w-full h-[420px] object-cover"
+            fill
+            sizes="(max-width: 1024px) 100vw, 40vw"
+            className="object-cover"
+            priority
           />
         </div>
 
-        {/* Right Column — Info, Specs & Actions */}
+        {/* Right Column — Details & Actions */}
         <div className="lg:col-span-7 space-y-6">
           <div>
             <h1 className="text-3xl font-extrabold text-white tracking-wide uppercase">
@@ -45,8 +61,8 @@ export default function WorkoutDetailView({ workout }: WorkoutDetailViewProps) {
             </div>
           </div>
 
-          {/* Key Specs Panel */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-xl divide-y divide-slate-800 text-sm">
+          {/* Specifications Table */}
+          <div className="bg-[#121620] border border-slate-800 rounded-xl divide-y divide-slate-800/80 text-sm">
             <div className="flex justify-between p-3.5">
               <span className="text-slate-400">EQUIPMENT</span>
               <span className="font-semibold text-slate-200">
@@ -105,7 +121,7 @@ export default function WorkoutDetailView({ workout }: WorkoutDetailViewProps) {
             </ol>
           </div>
 
-          {/* CTA Buttons */}
+          {/* Actions */}
           <div className="flex flex-wrap gap-4 pt-4">
             <button
               onClick={() => addToTodayPlan(workout)}
@@ -116,7 +132,7 @@ export default function WorkoutDetailView({ workout }: WorkoutDetailViewProps) {
             </button>
             <button
               onClick={() => addToSaved(workout)}
-              className="inline-flex items-center justify-center space-x-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold px-6 py-3.5 rounded-xl transition"
+              className="inline-flex items-center justify-center space-x-2 bg-[#121620] hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold px-6 py-3.5 rounded-xl transition"
             >
               <Bookmark className="w-5 h-5" />
               <span>Save for later</span>

@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Clock, Flame, Star } from "lucide-react";
 import { Workout } from "@/types/workout";
 
@@ -11,18 +12,20 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
   return (
     <Link
       href={`/workouts/${workout.id}`}
-      className="group bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition flex flex-col h-full"
+      className="group bg-[#121620] border border-slate-800/80 rounded-2xl overflow-hidden hover:border-slate-700 transition flex flex-col h-full"
     >
-      {/* Cover Image */}
-      <div className="relative h-48 w-full overflow-hidden bg-slate-800">
-        <img
-          src={workout.image || "/fallback.jpg"}
+      {/* Cover Image Container */}
+      <div className="relative h-48 w-full bg-slate-900 overflow-hidden">
+        <Image
+          src={workout.image || "/images/banner.png"}
           alt={workout.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover group-hover:scale-105 transition duration-300"
         />
       </div>
 
-      {/* Content */}
+      {/* Content Body */}
       <div className="p-5 flex flex-col flex-1 justify-between space-y-4">
         <div>
           {/* Muscle Group Tag Badges */}
