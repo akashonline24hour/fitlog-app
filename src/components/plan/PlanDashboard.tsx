@@ -2,7 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Trash2, CheckCircle2, Circle, ChevronDown, Plus } from "lucide-react";
+import Image from "next/image";
+import {
+  Trash2,
+  Check,
+  Clock,
+  Flame,
+  Star,
+  ChevronDown,
+  X,
+} from "lucide-react";
 import { usePlan } from "@/context/PlanContext";
 
 export default function PlanDashboard() {
@@ -18,7 +27,7 @@ export default function PlanDashboard() {
   const [activeTab, setActiveTab] = useState<"today" | "saved">("today");
   const [sortBy, setSortBy] = useState<string>("duration");
 
-  // Calculate stats
+  // Calculate live summary stats
   const totalExercises = todayPlan.length;
   const totalMinutes = todayPlan.reduce(
     (acc, curr) => acc + (curr.duration || 0),
@@ -138,63 +147,97 @@ export default function PlanDashboard() {
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {sortedList.map((workout) => (
             <div
               key={workout.id}
-              className={`flex items-center justify-between p-4 rounded-xl border bg-[#121620] transition ${
+              className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 rounded-2xl border bg-[#121620] gap-4 transition ${
                 workout.isDone
                   ? "border-slate-800/50 opacity-60"
-                  : "border-slate-800"
+                  : "border-slate-800/80"
               }`}
             >
+              {/* Left Side: Thumbnail + Info */}
               <div className="flex items-center space-x-4">
-                {activeTab === "today" && (
-                  <button
-                    onClick={() => toggleMarkAsDone(workout.id)}
-                    className="text-slate-400 hover:text-[#ccff00] transition"
-                  >
-                    {workout.isDone ? (
-                      <CheckCircle2 className="w-6 h-6 text-[#ccff00]" />
-                    ) : (
-                      <Circle className="w-6 h-6" />
-                    )}
-                  </button>
-                )}
+                <div className="relative w-24 h-16 rounded-xl overflow-hidden bg-slate-900 shrink-0">
+                  <Image
+                    src={workout.image || "/images/banner.png"}
+                    alt={workout.name}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
+                </div>
                 <div>
                   <h3
-                    className={`font-bold text-white text-base ${
-                      workout.isDone ? "line-through text-slate-400" : ""
-                    }`}
+                    className={`font-extrabold text-white text-base tracking-wide uppercase ${workout.isDone ? "line-through text-slate-400" : ""}`}
                   >
                     {workout.name}
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    {workout.sets} sets × {workout.reps} reps •{" "}
-                    {workout.duration} min • {workout.caloriesBurned} kcal
+                    {workout.equipment}
                   </p>
+
+                  {/* Spec Row */}
+                  <div className="flex items-center space-x-3 text-xs text-slate-300 mt-2 font-medium">
+                    <span className="flex items-center space-x-1">
+                      <Clock className="w-3.5 h-3.5 text-[#ccff00]" />
+                      <span>{workout.duration} min</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <Flame className="w-3.5 h-3.5 text-[#ccff00]" />
+                      <span>{workout.caloriesBurned} kcal</span>
+                    </span>
+                    {workout.rating && (
+                      <span className="flex items-center space-x-1">
+                        <Star className="w-3.5 h-3.5 text-[#ccff00] fill-[#ccff00]" />
+                        <span>{workout.rating}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                {activeTab === "saved" && (
+              {/* Right Side: Action Buttons */}
+              <div className="flex items-center space-x-3 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
+                <Link
+                  href={`/workouts/${workout.id}`}
+                  className="px-4 py-2 rounded-full border border-slate-700/80 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                >
+                  View Details
+                </Link>
+
+                {activeTab === "today" ? (
+                  <button
+                    onClick={() => toggleMarkAsDone(workout.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-bold transition flex items-center space-x-1.5 ${
+                      workout.isDone
+                        ? "bg-slate-800 text-slate-300 border border-slate-700"
+                        : "bg-[#ccff00] hover:bg-[#b8e600] text-black"
+                    }`}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>{workout.isDone ? "Completed" : "Mark as Done"}</span>
+                  </button>
+                ) : (
                   <button
                     onClick={() => addToTodayPlan(workout)}
-                    className="p-2 bg-[#ccff00]/10 hover:bg-[#ccff00]/20 text-[#ccff00] rounded-lg text-xs font-bold transition flex items-center space-x-1"
+                    className="px-4 py-2 rounded-full text-xs font-bold bg-[#ccff00] hover:bg-[#b8e600] text-black transition"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span>Add</span>
+                    Add to Today
                   </button>
                 )}
+
                 <button
                   onClick={() =>
                     activeTab === "today"
                       ? removeFromPlan(workout.id)
                       : removeFromSaved(workout.id)
                   }
-                  className="text-slate-500 hover:text-red-400 p-2 transition"
+                  className="text-slate-500 hover:text-slate-200 p-1.5 transition ml-1"
+                  title="Remove"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
