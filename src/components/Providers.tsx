@@ -2,10 +2,11 @@
 
 import React, { ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
+import { PlanProvider } from "@/context/PlanContext";
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
-    <>
+    <PlanProvider>
       {children}
       <Toaster
         position="bottom-right"
@@ -17,6 +18,6 @@ export default function Providers({ children }: { children: ReactNode }) {
           },
         }}
       />
-    </>
+    </PlanProvider>
   );
 }
