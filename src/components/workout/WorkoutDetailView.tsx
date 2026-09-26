@@ -27,21 +27,21 @@ export default function WorkoutDetailView({ workout }: WorkoutDetailViewProps) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        {/* Left Column — Exercise Artwork */}
-        <div className="lg:col-span-5 relative h-[380px] sm:h-[420px] rounded-2xl overflow-hidden bg-[#121620] border border-slate-800">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+        {/* Left Column — Exercise Artwork (Increased width via lg:col-span-6) */}
+        <div className="lg:col-span-6 relative min-h-[480px] h-full rounded-2xl overflow-hidden bg-[#121620] border border-slate-800">
           <Image
             src={workout.image || "/images/banner.png"}
             alt={workout.name}
             fill
-            sizes="(max-width: 1024px) 100vw, 40vw"
-            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover object-center"
             priority
           />
         </div>
 
         {/* Right Column — Details & Actions */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-6 space-y-6">
           <div>
             <h1 className="text-3xl font-extrabold text-white tracking-wide uppercase">
               {workout.name}
