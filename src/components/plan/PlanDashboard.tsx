@@ -1,9 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Check, Clock, Flame, Star, ChevronDown, X } from "lucide-react";
+import {
+  Check,
+  Clock,
+  Flame,
+  Star,
+  ChevronDown,
+  X,
+  ArrowUpDown,
+} from "lucide-react";
 import { usePlan } from "@/context/PlanContext";
 
 export default function PlanDashboard() {
@@ -17,7 +25,27 @@ export default function PlanDashboard() {
   } = usePlan();
 
   const [activeTab, setActiveTab] = useState<"today" | "saved">("today");
-  const [sortBy, setSortBy] = useState<string>("rating");
+  const [sortBy, setSortBy] = useState<string>("duration");
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  const sortOptions = [
+    { value: "duration", label: "Duration" },
+    { value: "calories", label: "Calories" },
+    { value: "rating", label: "Rating" },
+  ];
+  const activeSortLabel =
+    sortOptions.find((o) => o.value === sortBy)?.label ?? "Sort";
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Dynamically select list based on active tab
   const currentList = activeTab === "today" ? todayPlan : savedPlan;
@@ -35,11 +63,10 @@ export default function PlanDashboard() {
 
   // Apply sorting
   const sortedList = [...currentList].sort((a, b) => {
-    if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
     if (sortBy === "duration") return (b.duration || 0) - (a.duration || 0);
     if (sortBy === "calories")
       return (b.caloriesBurned || 0) - (a.caloriesBurned || 0);
-    if (sortBy === "name") return a.name.localeCompare(b.name);
+    if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
     return 0;
   });
 
@@ -104,21 +131,53 @@ export default function PlanDashboard() {
         </div>
 
         {/* SORT BY DROPDOWN */}
-        <div className="flex items-center space-x-2 text-xs">
-          <span className="text-slate-400 font-medium">Sort By</span>
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none bg-[#121620] border border-slate-800 text-slate-200 text-xs rounded-xl px-4 py-2 pr-8 font-semibold focus:outline-none focus:border-slate-700 cursor-pointer"
-            >
-              <option value="rating">Rating</option>
-              <option value="duration">Duration</option>
-              <option value="calories">Calories</option>
-              <option value="name">Name</option>
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          </div>
+        <div
+          className="flex items-center bg-[#121620] border border-slate-800/80 rounded-full pl-4 pr-1.5 py-1.5 text-xs shadow-sm relative"
+          ref={sortRef}
+        >
+          <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 mr-2" />
+          <span className="text-slate-400 font-semibold mr-3 hidden sm:inline">
+            Sort By
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setSortOpen((o) => !o)}
+            className={`flex items-center justify-between gap-2 bg-[#0d1017] border text-slate-100 text-xs rounded-full pl-4 pr-3 py-1.5 font-bold tracking-wide transition-all duration-150 cursor-pointer min-w-[104px] ${
+              sortOpen
+                ? "border-[#ccff00]/60 ring-2 ring-[#ccff00]/40"
+                : "border-slate-800/60 hover:border-slate-700 hover:bg-[#171c26]"
+            }`}
+          >
+            <span>{activeSortLabel}</span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-[#ccff00] transition-transform duration-150 ${
+                sortOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {sortOpen && (
+            <div className="absolute top-full right-0 mt-2 w-36 bg-[#121620] border border-slate-800/80 rounded-xl shadow-xl shadow-black/40 overflow-hidden z-20 py-1">
+              {sortOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    setSortBy(opt.value);
+                    setSortOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition ${
+                    sortBy === opt.value
+                      ? "bg-[#ccff00] text-black"
+                      : "text-slate-300 hover:bg-slate-800/70"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
